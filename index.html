@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>PARTITUR KANDANGJAGO</title>
+<title>PARTITUR KANDANGJAGO - Full</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif'], serif:['Instrument Serif','serif']}}}}</script>
@@ -15,7 +15,7 @@
 .scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
 .dropdown-shadow{box-shadow:0 20px 60px rgba(0,0,0,0.18),0 4px 12px rgba(0,0,0,0.08)}
 
-/* UI bersih + slider vertikal mulus */
+/* tambahan untuk 4 perubahan - tanpa ubah logic partitur.json */
 input[type=range].v-slider{
   -webkit-appearance:none; appearance:none; width:160px; height:6px; background:#e7e5e4; border-radius:999px; outline:none; transform:rotate(-90deg); transform-origin:center;
 }
@@ -23,7 +23,6 @@ input[type=range].v-slider::-webkit-slider-thumb{
   -webkit-appearance:none; width:22px; height:22px; border-radius:999px; background:#B91C1C; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer;
 }
 .arrow-btn{ backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
-#canvasContainer{ touch-action:none; }
 </style>
 </head>
 <body class="bg-[#FFFBF0] text-zinc-900 font-sans antialiased overflow-hidden h-[100dvh] flex flex-col">
@@ -34,7 +33,7 @@ input[type=range].v-slider::-webkit-slider-thumb{
     <div class="w-9 h-9 rounded-xl bg-[#B91C1C] text-white grid place-items-center font-serif text-[18px] shrink-0">♞</div>
     <div class="min-w-0">
       <h1 class="font-serif text-[16px] md:text-[19px] leading-none font-bold tracking-tight truncate">PARTITUR KANDANGJAGO</h1>
-      
+      <p class="text-[9px] tracking-[0.18em] text-zinc-500 font-bold hidden md:block">BERNYANYI TANPA MENGUNDUH</p>
     </div>
   </div>
   <div class="flex items-center gap-2">
@@ -118,16 +117,20 @@ input[type=range].v-slider::-webkit-slider-thumb{
       <div id="swipeHint" class="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 text-white text-[10px] px-3 py-1.5 rounded-full tracking-widest hidden md:flex">GESER / TAP PINGGIR UNTUK GANTI HALAMAN</div>
     </div>
 
-        <!-- Panah pinggir + page pinggir + slider vertikal (TIDAK ganggu fetchManifest) -->
-    <button id="prevPage" class="arrow-btn absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 active:scale-95">‹</button>
-    <button id="nextPage" class="arrow-btn absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 active:scale-95">›</button>
+        <!-- POIN 2 & 3 & 4: Panah di pinggir, page di pinggir, slider vertikal - kanvas bersih -->
+    <!-- Panah kiri -->
+    <button id="prevPage" class="arrow-btn absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">‹</button>
+    <!-- Panah kanan -->
+    <button id="nextPage" class="arrow-btn absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">›</button>
+    <!-- Jumlah halaman di pinggir -->
     <div id="pagePill" class="absolute left-3 bottom-3 z-20 bg-zinc-900/80 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-widest">- / -</div>
+    <!-- Slider vertikal zoom di kanan -->
     <div class="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 bg-white/90 backdrop-blur border shadow-lg rounded-full flex flex-col items-center py-3 gap-2">
-      <button id="zoomIn" class="w-9 h-9 rounded-full bg-zinc-900 text-white grid place-items-center font-bold text-[16px] active:scale-90">+</button>
-      <div class="h-[150px] md:h-[190px] w-9 grid place-items-center">
+      <button id="zoomIn" class="w-9 h-9 rounded-full bg-zinc-900 text-white grid place-items-center font-bold text-[16px] active:scale-90 transition">+</button>
+      <div class="h-[140px] md:h-[180px] w-9 grid place-items-center">
         <input id="zoomSlider" type="range" min="100" max="350" value="100" step="1" class="v-slider">
       </div>
-      <button id="zoomOut" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold text-[16px] active:scale-90">−</button>
+      <button id="zoomOut" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold text-[16px] active:scale-90 transition">−</button>
       <div id="zoomLabel" class="text-[9px] font-bold text-zinc-600 tracking-widest">100%</div>
       <button id="btnZoomFit" class="mt-1 w-9 h-7 rounded-full bg-[#FFFBF0] border text-[8px] font-bold tracking-widest">FIT</button>
     </div>
@@ -288,161 +291,100 @@ async function renderPage(keepTransform=false){
   if(!pdfDoc) return;
   const page=await pdfDoc.getPage(currentPage);
   const containerW=els.canvasContainer.clientWidth;
+  const containerH=els.canvasContainer.clientHeight;
   const unscaled=page.getViewport({scale:1});
+  // POIN 1: FIT BERDASARKAN LEBAR SAJA (ukuran terpendek) - dipertahankan dari file full yang jalan
   const margin = 12;
-  fitScale = (containerW - margin*2) / unscaled.width;
-  if(fitScale>2.8) fitScale=2.8;
-  if(fitScale<0.25) fitScale=0.25;
-  const renderZoom = Math.min(zoomLevel, 2.0);
-  const scale = fitScale * renderZoom;
+  const scaleW = (containerW - margin*2) / unscaled.width;
+  fitScale = scaleW;
+  if(fitScale>2.2) fitScale=2.2;
+  if(fitScale<0.4) fitScale=0.4;
+  const scale=fitScale*zoomLevel;
   const viewport=page.getViewport({scale});
-  if(Math.abs(viewport.width - els.canvas.width)>1 || !keepTransform){
-    els.canvas.width=viewport.width;
-    els.canvas.height=viewport.height;
-    els.canvas.style.width=viewport.width+'px';
-    els.canvas.style.height=viewport.height+'px';
-    const ctx=els.canvas.getContext('2d');
-    await page.render({canvasContext:ctx, viewport}).promise;
-  }
-  els.pagePill.textContent=`${currentPage} / ${totalPages}`;
-  els.zoomLabel.textContent=Math.round(zoomLevel*100)+'%';
-  const sl = document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(zoomLevel*100);
-  if(!keepTransform){
+  els.canvas.width=viewport.width;
+  els.canvas.height=viewport.height;
+  els.canvas.style.width=viewport.width+'px';
+  els.canvas.style.height=viewport.height+'px';
+  const ctx=els.canvas.getContext('2d');
+  await page.render({canvasContext:ctx, viewport}).promise;
+  const pp = document.getElementById('pagePill'); if(pp) pp.textContent=`${currentPage} / ${totalPages}`;
+  const zl = document.getElementById('zoomLabel'); if(zl) zl.textContent=Math.round(zoomLevel*100)+'%';
+  // center when fit - POIN 1 fit lebar
+  if(zoomLevel===1){
     panX = (containerW - viewport.width)/2;
-    panY = 6;
+    panY = (containerH - viewport.height)/2;
+    if(panY<0) panY=0;
   }
   updateTransform();
 }
 
-function updateTransform(){
-  const renderZoom = Math.min(zoomLevel, 2.0);
-  const visualScale = zoomLevel / renderZoom;
-  els.canvasWrapper.style.transform=`translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`;
-  els.canvasWrapper.style.transformOrigin='0 0';
-}
-
-function animateZoomTo(target){
-  zoomLevel = Math.min(3.5, Math.max(1, target));
-  updateTransform();
-  const sl = document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(zoomLevel*100);
-  els.zoomLabel.textContent=Math.round(zoomLevel*100)+'%';
-  clearTimeout(window._rerenderT);
-  window._rerenderT = setTimeout(()=>renderPage(true), 220);
-}
-
-
-function updateTransform(){ els.canvasWrapper.style.transform=`translate(${panX}px, ${panY}px)`; }
+function updateTransform(){ const renderZoom = Math.min(zoomLevel, 2.0); const visualScale = zoomLevel / renderZoom; els.canvasWrapper.style.transform=`translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`; els.canvasWrapper.style.transformOrigin='0 0'; }
 
 // Controls
 document.getElementById('zoomIn').onclick=()=>{ zoomLevel=Math.min(3.5,zoomLevel+0.25); renderPage(); toast(`${Math.round(zoomLevel*100)}%`); };
 document.getElementById('zoomOut').onclick=()=>{ zoomLevel=Math.max(1,zoomLevel-0.25); if(zoomLevel===1){} renderPage(); };
 document.getElementById('btnZoomFit').onclick=()=>{ zoomLevel=1; renderPage(); toast('Fit'); };
-function nextPage(){ if(currentPage<totalPages){ currentPage++; zoomLevel=1; panX=0; panY=0; const sl=document.getElementById('zoomSlider'); if(sl) sl.value=100; renderPage(); } else toast('Terakhir'); }
-function prevPage(){ if(currentPage>1){ currentPage--; zoomLevel=1; panX=0; panY=0; const sl=document.getElementById('zoomSlider'); if(sl) sl.value=100; renderPage(); } else toast('Pertama'); }
+function nextPage(){ if(currentPage<totalPages){ currentPage++; renderPage(); } else toast('Terakhir'); }
+function prevPage(){ if(currentPage>1){ currentPage--; renderPage(); } else toast('Pertama'); }
 document.getElementById('nextPage').onclick=nextPage;
 document.getElementById('prevPage').onclick=prevPage;
 document.getElementById('edgeLeft').onclick=prevPage;
 document.getElementById('edgeRight').onclick=nextPage;
-document.getElementById('btnAddPlaylist').onclick=()=>{ if(currentSong){ addToPlaylist(currentSong); toast('Ditambahkan ke playlist'); } };
 
-// Pan smooth - pakai variabel yang sudah ada (isDragging, startDrag, startPan) jangan redeclare
-els.canvasContainer.style.touchAction='none';
-let activePointers = new Map();
-let pinchState = null;
-let touchStartX = 0;
-let isSliding = false;
-
-els.canvasContainer.addEventListener('pointerdown', (e)=>{
-  if(e.pointerType==='touch' && activePointers.size>=1) return;
-  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(activePointers.size===1 && zoomLevel>1){
-    isDragging=true; startDrag={x:e.clientX,y:e.clientY}; startPan={x:panX,y:panY};
-    try{ els.canvasContainer.setPointerCapture(e.pointerId); }catch{}
-  }
-});
-window.addEventListener('pointermove', (e)=>{
-  if(!activePointers.has(e.pointerId)) return;
-  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(isDragging && activePointers.size===1 && !isSliding){
-    panX=startPan.x + (e.clientX-startDrag.x);
-    panY=startPan.y + (e.clientY-startDrag.y);
-    requestAnimationFrame(updateTransform);
-  }
-});
-function endPointer(e){ activePointers.delete(e.pointerId); if(activePointers.size===0) isDragging=false; }
-window.addEventListener('pointerup', endPointer);
-window.addEventListener('pointercancel', endPointer);
-
-// Pinch anti-balik
-els.canvasContainer.addEventListener('touchstart', (e)=>{
-  if(e.touches.length===2){
-    e.preventDefault();
-    const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-    const midX=(e.touches[0].clientX+e.touches[1].clientX)/2;
-    const midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
-    pinchState={startDist:dist, startZoom:zoomLevel, focalX:midX-panX, focalY:midY-panY};
-    isDragging=false;
-  } else if(e.touches.length===1 && zoomLevel===1){
-    touchStartX=e.touches[0].clientX;
-  }
-},{passive:false});
-
-els.canvasContainer.addEventListener('touchmove', (e)=>{
-  if(e.touches.length===2 && pinchState){
-    e.preventDefault();
-    const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-    const midX=(e.touches[0].clientX+e.touches[1].clientX)/2;
-    const midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
-    let newZoom=pinchState.startZoom * (dist/pinchState.startDist);
-    newZoom=Math.min(3.5,Math.max(1,newZoom));
-    const ratio=newZoom/pinchState.startZoom;
-    panX=midX - (pinchState.focalX*ratio);
-    panY=midY - (pinchState.focalY*ratio);
-    zoomLevel=newZoom;
-    const sl=document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(newZoom*100);
-    requestAnimationFrame(()=>{ updateTransform(); els.zoomLabel.textContent=Math.round(newZoom*100)+'%'; });
-  }
-},{passive:false});
-
-els.canvasContainer.addEventListener('touchend', (e)=>{
-  if(e.touches.length<2 && pinchState){
-    clearTimeout(window._rerenderT);
-    window._rerenderT=setTimeout(()=>renderPage(true), 180);
-    pinchState=null;
-  }
-  if(e.touches.length===0 && zoomLevel===1 && !pinchState){
-    const endX=e.changedTouches[0].clientX;
-    const diff=endX-touchStartX;
-    if(Math.abs(diff)>70){ if(diff<0) nextPage(); else prevPage(); }
-  }
-});
-
-// Slider vertikal mulus
-const zoomSliderEl = document.getElementById('zoomSlider');
-if(zoomSliderEl){
-  zoomSliderEl.addEventListener('pointerdown', ()=>{ isSliding=true; });
-  zoomSliderEl.addEventListener('input', (e)=>{
+// Slider vertikal mulus - tambahan, tidak ubah fetchManifest
+const zoomSlider = document.getElementById('zoomSlider');
+if(zoomSlider){
+  zoomSlider.addEventListener('input', (e)=>{
     const v = parseInt(e.target.value,10)/100;
     zoomLevel = v;
     requestAnimationFrame(()=>{
-      const rz = Math.min(zoomLevel, 2.0);
-      const vs = zoomLevel / rz;
-      els.canvasWrapper.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${vs})`;
-      els.zoomLabel.textContent = e.target.value + '%';
+      // visual scale saja biar mulus tanpa getar
+      const renderZoom = Math.min(zoomLevel, 2.0);
+      const visualScale = zoomLevel / renderZoom;
+      els.canvasWrapper.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`;
+      const zl = document.getElementById('zoomLabel');
+      if(zl) zl.textContent = e.target.value + '%';
     });
   });
-  zoomSliderEl.addEventListener('pointerup', (e)=>{
-    isSliding=false;
+  zoomSlider.addEventListener('change', (e)=>{
     const v = parseInt(e.target.value,10)/100;
     zoomLevel = v;
     clearTimeout(window._rerenderT);
-    window._rerenderT = setTimeout(()=>renderPage(true), 160);
+    window._rerenderT = setTimeout(()=>renderPage(true), 150);
   });
 }
-document.getElementById('zoomIn').onclick=()=>animateZoomTo(Math.min(3.5, zoomLevel+0.25));
-document.getElementById('zoomOut').onclick=()=>animateZoomTo(Math.max(1, zoomLevel-0.25));
-document.getElementById('btnZoomFit').onclick=()=>animateZoomTo(1);
+document.getElementById('btnAddPlaylist').onclick=()=>{ if(currentSong){ addToPlaylist(currentSong); toast('Ditambahkan ke playlist'); } };
 
+// Pan
+els.canvasContainer.addEventListener('pointerdown', (e)=>{
+  if(zoomLevel===1 && e.pointerType==='mouse') return; // biar edge tap tetap jalan
+  isDragging=true; startDrag={x:e.clientX,y:e.clientY}; startPan={x:panX,y:panY}; els.canvasContainer.setPointerCapture(e.pointerId);
+});
+window.addEventListener('pointermove', (e)=>{
+  if(!isDragging) return;
+  panX=startPan.x + (e.clientX-startDrag.x);
+  panY=startPan.y + (e.clientY-startDrag.y);
+  updateTransform();
+});
+window.addEventListener('pointerup', ()=>{ isDragging=false; });
+
+// Pinch
+let lastDist=0;
+els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===2){ lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); } }, {passive:false});
+els.canvasContainer.addEventListener('touchmove', (e)=>{
+  if(e.touches.length===2){ e.preventDefault(); const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(lastDist){ const delta=dist/lastDist; zoomLevel=Math.min(3.5,Math.max(1,zoomLevel*delta)); renderPage(); } lastDist=dist; }
+}, {passive:false});
+els.canvasContainer.addEventListener('touchend', ()=>{ lastDist=0; });
+
+// Swipe
+let touchStartX=0;
+els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===1) touchStartX=e.touches[0].clientX; }, {passive:true});
+els.canvasContainer.addEventListener('touchend', (e)=>{
+  if(zoomLevel!==1) return;
+  const endX=e.changedTouches[0].clientX;
+  const diff=endX-touchStartX;
+  if(Math.abs(diff)>60){ if(diff<0) nextPage(); else prevPage(); }
+});
 
 // Proteksi
 els.canvasContainer.addEventListener('contextmenu', e=>e.preventDefault());
