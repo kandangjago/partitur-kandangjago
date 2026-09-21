@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>PARTITUR KANDANGJAGO - Full</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Plus Jakarta Sans','sans-serif'], serif:['Instrument Serif','serif']}}}}</script>
+<style>
+*{-webkit-tap-highlight-color:transparent}
+.viewer-root *{user-select:none !important;-webkit-user-select:none !important;-webkit-touch-callout:none !important}
+@media print{.viewer-root{display:none !important}}
+.watermark{background-image:repeating-linear-gradient(-45deg,transparent,transparent 120px,rgba(185,28,28,0.04) 120px,rgba(185,28,28,0.04) 121px)}
+.scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
+.dropdown-shadow{box-shadow:0 20px 60px rgba(0,0,0,0.18),0 4px 12px rgba(0,0,0,0.08)}
+
+/* vertical slider */
+input[type=range].v-slider{
+  -webkit-appearance:none; appearance:none; width:160px; height:6px; background:#e7e5e4; border-radius:999px; outline:none; transform:rotate(-90deg); transform-origin:center;
+}
+input[type=range].v-slider::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:999px; background:#B91C1C; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer;
+}
+.arrow-btn{ backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+</style>
+</head>
+<body class="bg-[#FFFBF0] text-zinc-900 font-sans antialiased overflow-hidden h-[100dvh] flex flex-col">
+
+<!-- HEADER - selalu di atas -->
+<header class="h-[56px] shrink-0 bg-white border-b border-zinc-200 flex items-center px-3 md:px-4 gap-2 z-40 relative">
+  <div class="flex items-center gap-2.5 flex-1 min-w-0">
+    <div class="w-9 h-9 rounded-xl bg-[#B91C1C] text-white grid place-items-center font-serif text-[18px] shrink-0">♞</div>
+    <div class="min-w-0">
+      <h1 class="font-serif text-[16px] md:text-[19px] leading-none font-bold tracking-tight truncate">PARTITUR KANDANGJAGO</h1>
+      <p class="text-[9px] tracking-[0.18em] text-zinc-500 font-bold hidden md:block">BERNYANYI TANPA MENGUNDUH</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button id="btnKoleksi" class="h-9 px-4 rounded-full border bg-[#B91C1C] text-white text-[11px] font-bold tracking-widest flex items-center gap-1.5">
+      <span>KOLEKSI</span><span id="countKoleksi" class="bg-white/20 rounded-full px-1.5 py-0.5 text-[10px]">0</span><span class="text-[10px]">▼</span>
+    </button>
+    <button id="btnPlaylist" class="h-9 px-4 rounded-full border bg-white text-zinc-700 text-[11px] font-bold tracking-widest flex items-center gap-1.5">
+      <span>PLAYLIST</span><span id="countPlaylist" class="bg-zinc-100 rounded-full px-1.5 py-0.5 text-[10px]">0</span><span class="text-[10px]">▼</span>
+    </button>
+  </div>
+</header>
+
+<!-- DROPDOWNS -->
+<div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 hidden"></div>
+
+<!-- Dropdown Koleksi -->
+<div id="dropdownKoleksi" class="hidden fixed z-40 left-2 right-2 md:left-auto md:right-2 md:w-[400px] top-[64px] bg-white rounded-[20px] border dropdown-shadow overflow-hidden flex flex-col max-h-[78dvh]">
+  <div class="p-3 border-b bg-[#FFFBF0]">
+    <div class="relative">
+      <input id="searchInput" placeholder="Cari lagu..." class="w-full h-11 rounded-xl border border-zinc-200 bg-white pl-10 pr-3 text-[13px] outline-none focus:border-[#B91C1C]">
+      <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400">⌕</div>
+    </div>
+  </div>
+  <div id="listKoleksi" class="flex-1 overflow-auto scrollbar-hide p-2 space-y-1"></div>
+  <div class="p-2 border-t flex gap-2">
+    <button id="closeKoleksi" class="flex-1 h-10 rounded-xl bg-zinc-900 text-white text-[11px] font-bold tracking-widest">TUTUP</button>
+  </div>
+</div>
+
+<!-- Dropdown Playlist -->
+<div id="dropdownPlaylist" class="hidden fixed z-40 left-2 right-2 md:left-auto md:right-2 md:w-[400px] top-[64px] bg-white rounded-[20px] border dropdown-shadow overflow-hidden flex flex-col max-h-[78dvh]">
+  <div class="p-4 border-b">
+    <h3 class="font-bold text-[13px] tracking-widest">PLAYLIST KAMU</h3>
+    <p class="text-[11px] text-zinc-500 mt-1">Simpan lagu untuk ganti cepat saat bernyanyi</p>
+  </div>
+  <div id="listPlaylist" class="flex-1 overflow-auto scrollbar-hide p-2 space-y-1"></div>
+  <div class="p-2 border-t flex gap-2">
+    <button id="closePlaylist" class="flex-1 h-10 rounded-xl bg-zinc-900 text-white text-[11px] font-bold tracking-widest">TUTUP</button>
+  </div>
+</div>
+
+<!-- VIEWER FULL -->
+<div id="viewerRoot" class="viewer-root flex-1 flex flex-col relative bg-[#F6F1E6] overflow-hidden">
+  <!-- Empty state sebelum pilih lagu -->
+  <div id="emptyState" class="flex-1 grid place-items-center p-8 text-center bg-[#FFFBF0]">
+    <div class="max-w-[360px]">
+      <div class="w-20 h-20 mx-auto rounded-[20px] bg-white border shadow-sm grid place-items-center text-3xl mb-5">🎼</div>
+      <h2 class="font-serif text-[28px] font-bold leading-tight">Siap bernyanyi?</h2>
+      <p class="text-[13px] text-zinc-600 mt-3 leading-relaxed">Buka koleksi untuk memilih partitur. Saat partitur dibuka, tampilan akan full tanpa menu agar fokus bernyanyi.</p>
+      <button id="openKoleksiFromEmpty" class="mt-6 h-12 px-8 rounded-full bg-[#B91C1C] text-white font-bold text-[12px] tracking-widest">BUKA KOLEKSI</button>
+    </div>
+  </div>
+
+  <!-- Active viewer -->
+  <div id="viewerActive" class="hidden flex-1 flex flex-col relative">
+    <!-- Judul mengambang di atas partitur -->
+    <div class="absolute top-3 left-3 right-3 z-20 flex justify-between items-start pointer-events-none">
+      <div class="pointer-events-auto bg-zinc-900/90 backdrop-blur text-white px-3 py-2 rounded-full text-[11px] font-bold tracking-wide max-w-[60%] truncate shadow-lg" id="viewerTitle">Judul</div>
+      <div class="pointer-events-auto flex gap-1.5">
+        <button id="btnAddPlaylist" class="h-9 px-3 rounded-full bg-white border shadow text-[11px] font-bold">+ PLAYLIST</button>
+        <button id="btnZoomFit" class="w-9 h-9 rounded-full bg-white border shadow grid place-items-center text-[11px] font-bold">FIT</button>
+      </div>
+    </div>
+
+    <!-- Canvas area full -->
+    <div id="canvasContainer" class="flex-1 relative overflow-hidden watermark touch-none">
+      <div id="canvasWrapper" class="absolute left-0 top-0 will-change-transform">
+        <canvas id="pdfCanvas" class="shadow-[0_12px_50px_rgba(0,0,0,0.18)] bg-white"></canvas>
+        <div class="pointer-events-none absolute inset-0 opacity-[0.06] flex flex-wrap content-start p-3 gap-6 text-[14px] font-bold tracking-widest text-[#B91C1C] select-none leading-none">
+          KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO KANDANGJAGO
+        </div>
+      </div>
+      <!-- Edge tap -->
+      <div id="edgeLeft" class="absolute left-0 top-0 bottom-0 w-[20%] z-10"></div>
+      <div id="edgeRight" class="absolute right-0 top-0 bottom-0 w-[20%] z-10"></div>
+      <!-- Protect overlay -->
+      <div id="protectOverlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur grid place-items-center p-6 text-center z-20">
+        <div><div class="font-serif text-2xl font-bold">Dilindungi</div><div class="text-sm text-zinc-600 mt-2">Partitur disembunyikan</div></div>
+      </div>
+      <!-- Hint swipe -->
+      <div id="swipeHint" class="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 text-white text-[10px] px-3 py-1.5 rounded-full tracking-widest hidden md:flex">GESER / TAP PINGGIR UNTUK GANTI HALAMAN</div>
+    </div>
+
+        <!-- Panah kiri - di pinggir kiri -->
+    <button id="prevPage" class="arrow-btn absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">‹</button>
+    
+    <!-- Panah kanan - di pinggir kanan -->
+    <button id="nextPage" class="arrow-btn absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">›</button>
+
+    <!-- Jumlah halaman - di pinggir saja -->
+    <div id="pageInfo" class="absolute left-3 bottom-3 z-20 bg-zinc-900/80 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-widest">- / -</div>
+
+    <!-- Slider vertikal zoom di kanan - mulus -->
+    <div class="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 bg-white/90 backdrop-blur border shadow-lg rounded-full flex flex-col items-center py-3 gap-2">
+      <button id="zoomInBtn" class="w-9 h-9 rounded-full bg-zinc-900 text-white grid place-items-center font-bold text-[16px] active:scale-90 transition">+</button>
+      <div class="h-[140px] md:h-[180px] w-9 grid place-items-center">
+        <input id="zoomSlider" type="range" min="100" max="350" value="100" step="1" class="v-slider">
+      </div>
+      <button id="zoomOutBtn" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold text-[16px] active:scale-90 transition">−</button>
+      <div id="zoomLabel" class="text-[9px] font-bold text-zinc-600 tracking-widest">100%</div>
+      <button id="btnZoomFit" class="mt-1 w-9 h-7 rounded-full bg-[#FFFBF0] border text-[8px] font-bold tracking-widest">FIT</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[11px] px-4 py-2 rounded-full hidden z-50 shadow-lg"></div>
+
+<script type="module">
+const MANIFEST_URL = "./partitur.json";
+const PARTITUR_FOLDER = "./partitur/";
+let allSongs = [];
+let filteredSongs = [];
+let currentSong = null;
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 1;
+let zoomLevel = 1;
+let fitScale = 1;
+let panX=0, panY=0;
+let isDragging=false, startDrag={x:0,y:0}, startPan={x:0,y:0};
+let textIndex = new Map();
+
+import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/+esm";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs";
+
+const els = {
+  search: document.getElementById('searchInput'),
+  countKoleksi: document.getElementById('countKoleksi'),
+  countPlaylist: document.getElementById('countPlaylist'),
+  listKoleksi: document.getElementById('listKoleksi'),
+  listPlaylist: document.getElementById('listPlaylist'),
+  dropdownKoleksi: document.getElementById('dropdownKoleksi'),
+  dropdownPlaylist: document.getElementById('dropdownPlaylist'),
+  overlay: document.getElementById('overlay'),
+  btnKoleksi: document.getElementById('btnKoleksi'),
+  btnPlaylist: document.getElementById('btnPlaylist'),
+  viewerRoot: document.getElementById('viewerRoot'),
+  emptyState: document.getElementById('emptyState'),
+  viewerActive: document.getElementById('viewerActive'),
+  viewerTitle: document.getElementById('viewerTitle'),
+  canvas: document.getElementById('pdfCanvas'),
+  canvasContainer: document.getElementById('canvasContainer'),
+  canvasWrapper: document.getElementById('canvasWrapper'),
+  pageInfo: document.getElementById('pageInfo'),
+  zoomLabel: document.getElementById('zoomLabel'),
+  toast: document.getElementById('toast'),
+};
+
+function toast(msg){ els.toast.textContent=msg; els.toast.classList.remove('hidden'); setTimeout(()=>els.toast.classList.add('hidden'),1600); }
+function loadPlaylist(){ try{ return JSON.parse(localStorage.getItem('kandangjago_playlist')||'[]'); }catch{ return []; } }
+function savePlaylist(p){ localStorage.setItem('kandangjago_playlist', JSON.stringify(p)); renderCounts(); }
+function renderCounts(){
+  const pl = loadPlaylist();
+  els.countKoleksi.textContent = filteredSongs.length;
+  els.countPlaylist.textContent = pl.length;
+  // active style
+  els.btnKoleksi.className = els.dropdownKoleksi.classList.contains('hidden') ? "h-9 px-4 rounded-full border bg-[#B91C1C] text-white text-[11px] font-bold tracking-widest flex items-center gap-1.5" : "h-9 px-4 rounded-full border bg-zinc-900 text-white text-[11px] font-bold tracking-widest flex items-center gap-1.5";
+  els.btnPlaylist.className = els.dropdownPlaylist.classList.contains('hidden') ? "h-9 px-4 rounded-full border bg-white text-zinc-700 text-[11px] font-bold tracking-widest flex items-center gap-1.5" : "h-9 px-4 rounded-full border bg-zinc-900 text-white text-[11px] font-bold tracking-widest flex items-center gap-1.5";
+}
+
+function openDropdown(which){
+  closeAllDropdowns();
+  if(which==='koleksi'){ els.dropdownKoleksi.classList.remove('hidden'); }
+  if(which==='playlist'){ els.dropdownPlaylist.classList.remove('hidden'); renderPlaylist(); }
+  els.overlay.classList.remove('hidden');
+  renderCounts();
+}
+function closeAllDropdowns(){
+  els.dropdownKoleksi.classList.add('hidden');
+  els.dropdownPlaylist.classList.add('hidden');
+  els.overlay.classList.add('hidden');
+  renderCounts();
+}
+
+async function fetchManifest(){
+  try{
+    const r = await fetch(MANIFEST_URL + "?t="+Date.now());
+    if(r.ok){ const data = await r.json(); if(Array.isArray(data)&&data.length>0) return data.map(d=>({title:d.title||d.file.replace('.pdf','').replace(/_/g,' '), file:d.file, url: PARTITUR_FOLDER + d.file})); }
+  }catch(e){}
+  try{
+    for(const alt of ["./partitur/partitur.json","./partitur/manifest.json"]){
+      const r = await fetch(alt + "?t="+Date.now());
+      if(r.ok){ const data=await r.json(); if(data.length>0) return data.map(d=>({title:d.title||d.file.replace('.pdf',''), file:d.file, url: PARTITUR_FOLDER + d.file})); }
+    }
+  }catch{}
+  return [];
+}
+
+function renderList(){
+  els.listKoleksi.innerHTML="";
+  if(filteredSongs.length===0){ els.listKoleksi.innerHTML='<div class="p-6 text-center text-[12px] text-zinc-500">Tidak ada lagu</div>'; return; }
+  filteredSongs.forEach(song=>{
+    const div=document.createElement('div');
+    div.className="group flex items-center gap-2 p-3 rounded-xl hover:bg-[#FFFBF0] border border-transparent hover:border-[#F59E0B]/30 cursor-pointer";
+    div.innerHTML=`<div class="flex-1 min-w-0"><div class="font-bold text-[13px] truncate">${song.title}</div><div class="text-[10px] text-zinc-500 truncate">${song.file}</div></div><button class="addBtn w-8 h-8 rounded-full border bg-white grid place-items-center text-[12px] shrink-0">+</button>`;
+    div.addEventListener('click', (e)=>{ if(!e.target.classList.contains('addBtn')){ openSong(song); closeAllDropdowns(); }});
+    div.querySelector('.addBtn').addEventListener('click', (e)=>{ e.stopPropagation(); addToPlaylist(song); e.target.textContent='✓'; e.target.className='w-8 h-8 rounded-full bg-green-600 text-white grid place-items-center shrink-0'; toast('Ditambahkan'); });
+    els.listKoleksi.appendChild(div);
+  });
+  renderCounts();
+}
+
+function renderPlaylist(){
+  const pl = loadPlaylist();
+  els.listPlaylist.innerHTML="";
+  if(pl.length===0){ els.listPlaylist.innerHTML='<div class="p-8 text-center text-[12px] text-zinc-500">Playlist kosong.<br>Tambah dari koleksi dengan tombol +</div>'; return; }
+  pl.forEach((title,idx)=>{
+    const song = allSongs.find(s=>s.title===title) || {title, file:title+'.pdf', url: PARTITUR_FOLDER+title+'.pdf'};
+    const div=document.createElement('div');
+    div.className="flex items-center gap-2 p-3 rounded-xl border bg-[#FFFBF0]";
+    div.innerHTML=`<div class="flex-1 min-w-0"><div class="font-bold text-[13px] truncate">${song.title}</div><div class="text-[10px] text-zinc-500">#${idx+1}</div></div><button class="playBtn h-8 px-3 rounded-full bg-zinc-900 text-white text-[11px] font-bold shrink-0">BUKA</button><button class="delBtn w-8 h-8 rounded-full border bg-white grid place-items-center shrink-0">✕</button>`;
+    div.querySelector('.playBtn').onclick=()=>{ openSong(song); closeAllDropdowns(); };
+    div.querySelector('.delBtn').onclick=()=>{ const newPl=loadPlaylist().filter(t=>t!==title); savePlaylist(newPl); renderPlaylist(); };
+    els.listPlaylist.appendChild(div);
+  });
+  renderCounts();
+}
+
+function addToPlaylist(song){
+  const pl=loadPlaylist();
+  if(!pl.includes(song.title)){ pl.push(song.title); savePlaylist(pl); renderPlaylist(); }
+}
+
+async function indexAllText(){
+  for(const song of allSongs){
+    try{
+      const pdf = await pdfjsLib.getDocument({url:song.url}).promise;
+      let fullText="";
+      for(let p=1;p<=Math.min(pdf.numPages,2);p++){ const page=await pdf.getPage(p); const txt=await page.getTextContent(); fullText+=" "+txt.items.map(it=>it.str).join(" "); }
+      textIndex.set(song.file, fullText.toLowerCase());
+    }catch{ textIndex.set(song.file,""); }
+  }
+}
+
+function applySearch(){
+  const q=els.search.value.trim().toLowerCase();
+  if(!q){ filteredSongs=[...allSongs]; renderList(); return; }
+  filteredSongs=allSongs.filter(s=>{ if(s.title.toLowerCase().includes(q)) return true; const txt=textIndex.get(s.file)||""; return txt.includes(q); });
+  renderList();
+}
+
+// VIEWER
+async function openSong(song){
+  currentSong=song;
+  els.emptyState.classList.add('hidden');
+  els.viewerActive.classList.remove('hidden');
+  els.viewerActive.classList.add('flex');
+  els.viewerTitle.textContent=song.title;
+  currentPage=1; zoomLevel=1; panX=0; panY=0;
+  try{ pdfDoc=await pdfjsLib.getDocument({url:song.url}).promise; totalPages=pdfDoc.numPages; }catch(e){ toast('Gagal load PDF'); console.error(e); return; }
+  await renderPage();
+  setTimeout(()=>{ document.getElementById('swipeHint').classList.remove('hidden'); setTimeout(()=>document.getElementById('swipeHint').classList.add('hidden'),2500); },500);
+}
+
+async function renderPage(){
+  if(!pdfDoc) return;
+  const page=await pdfDoc.getPage(currentPage);
+  const containerW=els.canvasContainer.clientWidth;
+  const containerH=els.canvasContainer.clientHeight;
+  const unscaled=page.getViewport({scale:1});
+  // POIN 1: FIT BERDASARKAN LEBAR (ukuran terpendek)
+  const margin = 12;
+  const scaleW = (containerW - margin*2) / unscaled.width;
+  fitScale = scaleW;
+  if(fitScale>2.2) fitScale=2.2;
+  if(fitScale<0.4) fitScale=0.4;
+  const scale=fitScale*zoomLevel;
+  const viewport=page.getViewport({scale});
+  els.canvas.width=viewport.width;
+  els.canvas.height=viewport.height;
+  els.canvas.style.width=viewport.width+'px';
+  els.canvas.style.height=viewport.height+'px';
+  const ctx=els.canvas.getContext('2d');
+  await page.render({canvasContext:ctx, viewport}).promise;
+  document.getElementById('pageInfo').textContent=`Hal ${currentPage} / ${totalPages}`;
+  els.zoomLabel.textContent=Math.round(zoomLevel*100)+'%';
+  // center when fit
+  if(zoomLevel===1){
+    panX = (containerW - viewport.width)/2;
+    panY = (containerH - viewport.height)/2;
+    if(panY<0) panY=0;
+  }
+  updateTransform();
+}
+
+function updateTransform(){ const renderZoom = Math.min(zoomLevel, 2.0); const visualScale = zoomLevel / renderZoom; els.canvasWrapper.style.transform=`translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`; els.canvasWrapper.style.transformOrigin='0 0'; }
+
+// Controls
+document.getElementById('zoomIn').onclick=()=>{ zoomLevel=Math.min(3.5,zoomLevel+0.25); renderPage(); toast(`${Math.round(zoomLevel*100)}%`); };
+document.getElementById('zoomOut').onclick=()=>{ zoomLevel=Math.max(1,zoomLevel-0.25); if(zoomLevel===1){} renderPage(); };
+document.getElementById('btnZoomFit').onclick=()=>{ zoomLevel=1; renderPage(); toast('Fit'); };
+function nextPage(){ if(currentPage<totalPages){ currentPage++; renderPage(); } else toast('Terakhir'); }
+function prevPage(){ if(currentPage>1){ currentPage--; renderPage(); } else toast('Pertama'); }
+document.getElementById('nextPage').onclick=nextPage;
+document.getElementById('prevPage').onclick=prevPage;
+document.getElementById('edgeLeft').onclick=prevPage;
+document.getElementById('edgeRight').onclick=nextPage;
+
+// Slider vertikal mulus
+const zoomSlider = document.getElementById('zoomSlider');
+let isSliding=false;
+if(zoomSlider){
+  zoomSlider.addEventListener('pointerdown', ()=>{ isSliding=true; });
+  zoomSlider.addEventListener('input', (e)=>{
+    const v = parseInt(e.target.value,10)/100;
+    zoomLevel = v;
+    requestAnimationFrame(()=>{
+      const scale = fitScale * Math.min(zoomLevel, 2.0);
+      // update transform only for smoothness
+      const renderZoom = Math.min(zoomLevel, 2.0);
+      const visualScale = zoomLevel / renderZoom;
+      els.canvasWrapper.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`;
+      const zl = document.getElementById('zoomLabel');
+      if(zl) zl.textContent = e.target.value + '%';
+    });
+  });
+  zoomSlider.addEventListener('pointerup', (e)=>{
+    isSliding=false;
+    const v = parseInt(e.target.value,10)/100;
+    zoomLevel = v;
+    clearTimeout(window._rerenderT);
+    window._rerenderT = setTimeout(()=>renderPage(true), 150);
+  });
+}
+const zoomInBtn = document.getElementById('zoomInBtn');
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+if(zoomInBtn) zoomInBtn.onclick=()=>{ zoomLevel=Math.min(3.5, zoomLevel+0.25); const sl=document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(zoomLevel*100); updateTransformSmooth(); };
+if(zoomOutBtn) zoomOutBtn.onclick=()=>{ zoomLevel=Math.max(1, zoomLevel-0.25); const sl=document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(zoomLevel*100); updateTransformSmooth(); };
+function updateTransformSmooth(){
+  const renderZoom = Math.min(zoomLevel, 2.0);
+  const visualScale = zoomLevel / renderZoom;
+  els.canvasWrapper.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`;
+  const zl=document.getElementById('zoomLabel'); if(zl) zl.textContent=Math.round(zoomLevel*100)+'%';
+  clearTimeout(window._rerenderT); window._rerenderT=setTimeout(()=>renderPage(true), 200);
+}
+const btnZoomFit = document.getElementById('btnZoomFit');
+if(btnZoomFit) btnZoomFit.onclick=()=>{ zoomLevel=1; panX=0; panY=0; const sl=document.getElementById('zoomSlider'); if(sl) sl.value=100; renderPage(); };
+
+document.getElementById('btnAddPlaylist').onclick=()=>{ if(currentSong){ addToPlaylist(currentSong); toast('Ditambahkan ke playlist'); } };
+
+// Pan
+els.canvasContainer.addEventListener('pointerdown', (e)=>{
+  if(zoomLevel===1 && e.pointerType==='mouse') return; // biar edge tap tetap jalan
+  isDragging=true; startDrag={x:e.clientX,y:e.clientY}; startPan={x:panX,y:panY}; els.canvasContainer.setPointerCapture(e.pointerId);
+});
+window.addEventListener('pointermove', (e)=>{
+  if(!isDragging) return;
+  panX=startPan.x + (e.clientX-startDrag.x);
+  panY=startPan.y + (e.clientY-startDrag.y);
+  updateTransform();
+});
+window.addEventListener('pointerup', ()=>{ isDragging=false; });
+
+// Pinch
+let lastDist=0;
+els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===2){ lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); } }, {passive:false});
+els.canvasContainer.addEventListener('touchmove', (e)=>{
+  if(e.touches.length===2){ e.preventDefault(); const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(lastDist){ const delta=dist/lastDist; zoomLevel=Math.min(3.5,Math.max(1,zoomLevel*delta)); renderPage(); } lastDist=dist; }
+}, {passive:false});
+els.canvasContainer.addEventListener('touchend', ()=>{ lastDist=0; });
+
+// Swipe
+let touchStartX=0;
+els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===1) touchStartX=e.touches[0].clientX; }, {passive:true});
+els.canvasContainer.addEventListener('touchend', (e)=>{
+  if(zoomLevel!==1) return;
+  const endX=e.changedTouches[0].clientX;
+  const diff=endX-touchStartX;
+  if(Math.abs(diff)>60){ if(diff<0) nextPage(); else prevPage(); }
+});
+
+// Proteksi
+els.canvasContainer.addEventListener('contextmenu', e=>e.preventDefault());
+els.canvasContainer.addEventListener('selectstart', e=>e.preventDefault());
+document.addEventListener('copy', e=>{ if(e.target.closest('.viewer-root')) e.preventDefault(); });
+document.addEventListener('cut', e=>{ if(e.target.closest('.viewer-root')) e.preventDefault(); });
+const protectOverlay=document.getElementById('protectOverlay');
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) protectOverlay.classList.remove('hidden'); else protectOverlay.classList.add('hidden'); });
+window.addEventListener('blur', ()=>protectOverlay.classList.remove('hidden'));
+window.addEventListener('focus', ()=>protectOverlay.classList.add('hidden'));
+
+// Dropdown logic
+els.btnKoleksi.onclick=()=>{ if(els.dropdownKoleksi.classList.contains('hidden')) openDropdown('koleksi'); else closeAllDropdowns(); };
+els.btnPlaylist.onclick=()=>{ if(els.dropdownPlaylist.classList.contains('hidden')) openDropdown('playlist'); else closeAllDropdowns(); };
+document.getElementById('closeKoleksi').onclick=closeAllDropdowns;
+document.getElementById('closePlaylist').onclick=closeAllDropdowns;
+els.overlay.onclick=closeAllDropdowns;
+document.getElementById('openKoleksiFromEmpty').onclick=()=>openDropdown('koleksi');
+els.search.addEventListener('input', ()=>{ clearTimeout(window._s); window._s=setTimeout(applySearch,250); });
+window.addEventListener('resize', ()=>{ if(pdfDoc) renderPage(); });
+
+// INIT
+(async()=>{
+  allSongs=await fetchManifest();
+  allSongs=allSongs.sort((a,b)=>a.title.localeCompare(b.title,'id'));
+  filteredSongs=[...allSongs];
+  renderList(); renderCounts(); renderPlaylist();
+  if(allSongs.length>0) indexAllText();
+})();
+</script>
+</body>
+</html>
