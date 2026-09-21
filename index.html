@@ -15,14 +15,33 @@
 .scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
 .dropdown-shadow{box-shadow:0 20px 60px rgba(0,0,0,0.18),0 4px 12px rgba(0,0,0,0.08)}
 
-/* tambahan untuk 4 perubahan - tanpa ubah logic partitur.json */
+/* MINIMAL - hanya ubah posisi, tidak ubah logic fetchManifest */
+#canvasContainer{ touch-action:none; }
+.arrow-btn-side{
+  position:absolute; top:50%; transform:translateY(-50%); z-index:25;
+  width:44px; height:64px; border-radius:999px; background:rgba(255,255,255,0.92);
+  border:1px solid #e7e5e4; box-shadow:0 4px 16px rgba(0,0,0,0.12);
+  display:grid; place-items:center; font-size:22px; font-weight:800;
+}
+#prevPage.arrow-btn-side{ left:8px; }
+#nextPage.arrow-btn-side{ right:8px; }
+#pagePill.clean-edge{
+  position:absolute; left:12px; bottom:12px; z-index:25;
+  background:rgba(24,24,27,0.8); color:white; backdrop-filter:blur(8px);
+  padding:4px 10px; border-radius:999px; font-size:10px; font-weight:700;
+}
 input[type=range].v-slider{
-  -webkit-appearance:none; appearance:none; width:160px; height:6px; background:#e7e5e4; border-radius:999px; outline:none; transform:rotate(-90deg); transform-origin:center;
+  -webkit-appearance:none; appearance:none; width:150px; height:6px; background:#e7e5e4; border-radius:999px; outline:none; transform:rotate(-90deg); transform-origin:center;
 }
 input[type=range].v-slider::-webkit-slider-thumb{
-  -webkit-appearance:none; width:22px; height:22px; border-radius:999px; background:#B91C1C; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.2); cursor:pointer;
+  -webkit-appearance:none; width:20px; height:20px; border-radius:999px; background:#B91C1C; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.2); cursor:pointer;
 }
-.arrow-btn{ backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+#verticalZoomBar{
+  position:absolute; right:8px; top:50%; transform:translateY(-50%); z-index:25;
+  background:rgba(255,255,255,0.92); backdrop-filter:blur(12px); border:1px solid #e7e5e4;
+  box-shadow:0 4px 20px rgba(0,0,0,0.12); border-radius:999px;
+  display:flex; flex-direction:column; align-items:center; padding:10px 6px; gap:8px;
+}
 </style>
 </head>
 <body class="bg-[#FFFBF0] text-zinc-900 font-sans antialiased overflow-hidden h-[100dvh] flex flex-col">
@@ -33,7 +52,7 @@ input[type=range].v-slider::-webkit-slider-thumb{
     <div class="w-9 h-9 rounded-xl bg-[#B91C1C] text-white grid place-items-center font-serif text-[18px] shrink-0">♞</div>
     <div class="min-w-0">
       <h1 class="font-serif text-[16px] md:text-[19px] leading-none font-bold tracking-tight truncate">PARTITUR KANDANGJAGO</h1>
-      <p class="text-[9px] tracking-[0.18em] text-zinc-500 font-bold hidden md:block">BERNYANYI TANPA MENGUNDUH</p>
+      
     </div>
   </div>
   <div class="flex items-center gap-2">
@@ -117,24 +136,31 @@ input[type=range].v-slider::-webkit-slider-thumb{
       <div id="swipeHint" class="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 text-white text-[10px] px-3 py-1.5 rounded-full tracking-widest hidden md:flex">GESER / TAP PINGGIR UNTUK GANTI HALAMAN</div>
     </div>
 
-        <!-- POIN 2 & 3 & 4: Panah di pinggir, page di pinggir, slider vertikal - kanvas bersih -->
-    <!-- Panah kiri -->
-    <button id="prevPage" class="arrow-btn absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">‹</button>
-    <!-- Panah kanan -->
-    <button id="nextPage" class="arrow-btn absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-14 md:w-12 md:h-16 rounded-full bg-white/90 border shadow-lg grid place-items-center text-[22px] font-bold text-zinc-800 hover:bg-white active:scale-95 transition">›</button>
-    <!-- Jumlah halaman di pinggir -->
-    <div id="pagePill" class="absolute left-3 bottom-3 z-20 bg-zinc-900/80 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-widest">- / -</div>
-    <!-- Slider vertikal zoom di kanan -->
-    <div class="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-20 bg-white/90 backdrop-blur border shadow-lg rounded-full flex flex-col items-center py-3 gap-2">
-      <button id="zoomIn" class="w-9 h-9 rounded-full bg-zinc-900 text-white grid place-items-center font-bold text-[16px] active:scale-90 transition">+</button>
-      <div class="h-[140px] md:h-[180px] w-9 grid place-items-center">
+    <!-- Bottom controls -->
+    <div class="absolute bottom-0 left-0 right-0 z-20 p-3 md:p-4 pointer-events-none">
+      <div class="max-w-[520px] mx-auto bg-white/95 backdrop-blur rounded-[20px] border shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex items-center justify-between px-2 h-[56px] pointer-events-auto">
+        <div class="flex items-center gap-1">
+          <button id="prevPage" class="w-10 h-10 rounded-full bg-zinc-900 text-white grid place-items-center text-[18px]">‹</button>
+          <button id="zoomOut" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold">-</button>
+          <button id="zoomIn" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold">+</button>
+        </div>
+        <div id="pagePill" class="h-8 px-4 rounded-full bg-[#FFFBF0] border text-[11px] font-bold grid place-items-center">Hal - / -</div>
+        <div class="flex items-center gap-1">
+          <div id="zoomLabel" class="text-[10px] font-bold text-zinc-500 w-10 text-center">100%</div>
+          <button id="nextPage" class="w-10 h-10 rounded-full bg-zinc-900 text-white grid place-items-center text-[18px]">›</button>
+        </div>
+      </div>
+    </div>
+    <!-- Slider vertikal tambahan (tidak ganggu fetch) -->
+    <div id="verticalZoomBar">
+      <button id="vZoomIn" class="w-8 h-8 rounded-full bg-zinc-900 text-white grid place-items-center font-bold">+</button>
+      <div class="h-[130px] w-8 grid place-items-center">
         <input id="zoomSlider" type="range" min="100" max="350" value="100" step="1" class="v-slider">
       </div>
-      <button id="zoomOut" class="w-9 h-9 rounded-full border bg-white grid place-items-center font-bold text-[16px] active:scale-90 transition">−</button>
-      <div id="zoomLabel" class="text-[9px] font-bold text-zinc-600 tracking-widest">100%</div>
-      <button id="btnZoomFit" class="mt-1 w-9 h-7 rounded-full bg-[#FFFBF0] border text-[8px] font-bold tracking-widest">FIT</button>
+      <button id="vZoomOut" class="w-8 h-8 rounded-full border bg-white grid place-items-center font-bold">−</button>
+      <div id="zoomLabelV" class="text-[9px] font-bold text-zinc-600">100%</div>
     </div>
-  </div>
+
   </div>
 </div>
 
@@ -287,13 +313,13 @@ async function openSong(song){
   setTimeout(()=>{ document.getElementById('swipeHint').classList.remove('hidden'); setTimeout(()=>document.getElementById('swipeHint').classList.add('hidden'),2500); },500);
 }
 
-async function renderPage(keepTransform=false){
+async function renderPage(){
   if(!pdfDoc) return;
   const page=await pdfDoc.getPage(currentPage);
   const containerW=els.canvasContainer.clientWidth;
   const containerH=els.canvasContainer.clientHeight;
   const unscaled=page.getViewport({scale:1});
-  // POIN 1: FIT BERDASARKAN LEBAR SAJA (ukuran terpendek) - dipertahankan dari file full yang jalan
+  // FIT LEBAR SAJA - biar tidak kekecilan
   const margin = 12;
   const scaleW = (containerW - margin*2) / unscaled.width;
   fitScale = scaleW;
@@ -307,9 +333,9 @@ async function renderPage(keepTransform=false){
   els.canvas.style.height=viewport.height+'px';
   const ctx=els.canvas.getContext('2d');
   await page.render({canvasContext:ctx, viewport}).promise;
-  const pp = document.getElementById('pagePill'); if(pp) pp.textContent=`${currentPage} / ${totalPages}`;
-  const zl = document.getElementById('zoomLabel'); if(zl) zl.textContent=Math.round(zoomLevel*100)+'%';
-  // center when fit - POIN 1 fit lebar
+  els.pagePill.textContent=`Hal ${currentPage} / ${totalPages}`;
+  els.zoomLabel.textContent=Math.round(zoomLevel*100)+'%';
+  // center when fit
   if(zoomLevel===1){
     panX = (containerW - viewport.width)/2;
     panY = (containerH - viewport.height)/2;
@@ -318,47 +344,69 @@ async function renderPage(keepTransform=false){
   updateTransform();
 }
 
-function updateTransform(){ const renderZoom = Math.min(zoomLevel, 2.0); const visualScale = zoomLevel / renderZoom; els.canvasWrapper.style.transform=`translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`; els.canvasWrapper.style.transformOrigin='0 0'; }
+function updateTransform(){ els.canvasWrapper.style.transform=`translate(${panX}px, ${panY}px)`; }
 
 // Controls
 document.getElementById('zoomIn').onclick=()=>{ zoomLevel=Math.min(3.5,zoomLevel+0.25); renderPage(); toast(`${Math.round(zoomLevel*100)}%`); };
 document.getElementById('zoomOut').onclick=()=>{ zoomLevel=Math.max(1,zoomLevel-0.25); if(zoomLevel===1){} renderPage(); };
 document.getElementById('btnZoomFit').onclick=()=>{ zoomLevel=1; renderPage(); toast('Fit'); };
-function nextPage(){ if(currentPage<totalPages){ currentPage++; renderPage(); } else toast('Terakhir'); }
-function prevPage(){ if(currentPage>1){ currentPage--; renderPage(); } else toast('Pertama'); }
+function nextPage(){ if(currentPage<totalPages){ currentPage++; zoomLevel=1; panX=0; panY=0; const sl=document.getElementById('zoomSlider'); if(sl) sl.value=100; renderPage(); } else toast('Terakhir'); }
+function prevPage(){ if(currentPage>1){ currentPage--; zoomLevel=1; panX=0; panY=0; const sl=document.getElementById('zoomSlider'); if(sl) sl.value=100; renderPage(); } else toast('Pertama'); }
 document.getElementById('nextPage').onclick=nextPage;
 document.getElementById('prevPage').onclick=prevPage;
 document.getElementById('edgeLeft').onclick=prevPage;
 document.getElementById('edgeRight').onclick=nextPage;
-
-// Slider vertikal mulus - tambahan, tidak ubah fetchManifest
-const zoomSlider = document.getElementById('zoomSlider');
-if(zoomSlider){
-  zoomSlider.addEventListener('input', (e)=>{
-    const v = parseInt(e.target.value,10)/100;
-    zoomLevel = v;
-    requestAnimationFrame(()=>{
-      // visual scale saja biar mulus tanpa getar
-      const renderZoom = Math.min(zoomLevel, 2.0);
-      const visualScale = zoomLevel / renderZoom;
-      els.canvasWrapper.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${visualScale})`;
-      const zl = document.getElementById('zoomLabel');
-      if(zl) zl.textContent = e.target.value + '%';
-    });
-  });
-  zoomSlider.addEventListener('change', (e)=>{
-    const v = parseInt(e.target.value,10)/100;
-    zoomLevel = v;
-    clearTimeout(window._rerenderT);
-    window._rerenderT = setTimeout(()=>renderPage(true), 150);
-  });
-}
 document.getElementById('btnAddPlaylist').onclick=()=>{ if(currentSong){ addToPlaylist(currentSong); toast('Ditambahkan ke playlist'); } };
 
-// Pan
+// Posisikan panah di pinggir dan page di pinggir (POIN 2 & 3)
+(function(){
+  const prev = document.getElementById('prevPage');
+  const next = document.getElementById('nextPage');
+  const pill = document.getElementById('pagePill');
+  if(prev){ prev.classList.add('arrow-btn-side'); }
+  if(next){ next.classList.add('arrow-btn-side'); }
+  if(pill){ pill.classList.add('clean-edge'); }
+})();
+
+// Slider vertikal - logika mulus tanpa duplikasi variabel
+(function(){
+  const slider = document.getElementById('zoomSlider');
+  const labelV = document.getElementById('zoomLabelV');
+  const label = document.getElementById('zoomLabel');
+  const vIn = document.getElementById('vZoomIn');
+  const vOut = document.getElementById('vZoomOut');
+  if(!slider) return;
+  let isSlidingLocal = false;
+  slider.addEventListener('pointerdown', ()=>{ isSlidingLocal=true; });
+  slider.addEventListener('input', (e)=>{
+    const v = parseInt(e.target.value,10)/100;
+    zoomLevel = v;
+    // update visual only - anti getar
+    if(label) label.textContent = e.target.value + '%';
+    if(labelV) labelV.textContent = e.target.value + '%';
+    updateTransform();
+  });
+  slider.addEventListener('pointerup', (e)=>{
+    isSlidingLocal=false;
+    const v = parseInt(e.target.value,10)/100;
+    zoomLevel = v;
+    renderPage();
+  });
+  slider.addEventListener('change', (e)=>{
+    const v = parseInt(e.target.value,10)/100;
+    zoomLevel = v;
+    renderPage();
+  });
+  if(vIn) vIn.onclick=()=>{ zoomLevel=Math.min(3.5, zoomLevel+0.25); slider.value=Math.round(zoomLevel*100); if(label) label.textContent=Math.round(zoomLevel*100)+'%'; if(labelV) labelV.textContent=Math.round(zoomLevel*100)+'%'; renderPage(); };
+  if(vOut) vOut.onclick=()=>{ zoomLevel=Math.max(1, zoomLevel-0.25); slider.value=Math.round(zoomLevel*100); if(label) label.textContent=Math.round(zoomLevel*100)+'%'; if(labelV) labelV.textContent=Math.round(zoomLevel*100)+'%'; renderPage(); };
+})();
+
+// Pan & pinch asli dipertahankan, hanya tambah touch-action none untuk anti getar
+els.canvasContainer.style.touchAction='none';
 els.canvasContainer.addEventListener('pointerdown', (e)=>{
-  if(zoomLevel===1 && e.pointerType==='mouse') return; // biar edge tap tetap jalan
-  isDragging=true; startDrag={x:e.clientX,y:e.clientY}; startPan={x:panX,y:panY}; els.canvasContainer.setPointerCapture(e.pointerId);
+  if(zoomLevel===1 && e.pointerType==='mouse') return;
+  isDragging=true; startDrag={x:e.clientX,y:e.clientY}; startPan={x:panX,y:panY}; 
+  try{ els.canvasContainer.setPointerCapture(e.pointerId); }catch{}
 });
 window.addEventListener('pointermove', (e)=>{
   if(!isDragging) return;
@@ -368,15 +416,13 @@ window.addEventListener('pointermove', (e)=>{
 });
 window.addEventListener('pointerup', ()=>{ isDragging=false; });
 
-// Pinch
 let lastDist=0;
 els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===2){ lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); } }, {passive:false});
 els.canvasContainer.addEventListener('touchmove', (e)=>{
-  if(e.touches.length===2){ e.preventDefault(); const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(lastDist){ const delta=dist/lastDist; zoomLevel=Math.min(3.5,Math.max(1,zoomLevel*delta)); renderPage(); } lastDist=dist; }
+  if(e.touches.length===2){ e.preventDefault(); const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); if(lastDist){ const delta=dist/lastDist; zoomLevel=Math.min(3.5,Math.max(1,zoomLevel*delta)); renderPage(); const sl=document.getElementById('zoomSlider'); if(sl) sl.value=Math.round(zoomLevel*100); } lastDist=dist; }
 }, {passive:false});
 els.canvasContainer.addEventListener('touchend', ()=>{ lastDist=0; });
 
-// Swipe
 let touchStartX=0;
 els.canvasContainer.addEventListener('touchstart', (e)=>{ if(e.touches.length===1) touchStartX=e.touches[0].clientX; }, {passive:true});
 els.canvasContainer.addEventListener('touchend', (e)=>{
